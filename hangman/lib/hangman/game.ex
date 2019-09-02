@@ -20,10 +20,12 @@ defmodule Hangman.Game do
     defguard game_complete_guard(state) when state in [:won, :lost]
     def make_move(game = %{ game_state: state}, _guess) when game_complete_guard(state) do
         game
+        |> return_game_with_tally()
     end
 
     def make_move(game, guess) do
         accept_move(game, guess, MapSet.member?(game.used, guess))
+        |> return_game_with_tally()
     end
 
     def tally(game) do
@@ -36,6 +38,8 @@ defmodule Hangman.Game do
     end
 
     ##################
+
+    defp return_game_with_tally(game), do: { game, tally(game) }
 
     defp accept_move(game, _guess, _already_guessed = true) do
         Map.put(game, :game_state, :already_used)
